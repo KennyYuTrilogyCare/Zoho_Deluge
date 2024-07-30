@@ -1,0 +1,5 @@
+void search_user(string user_email)
+{
+response = zoho.crm.searchRecords("users","(email:equals:" + user_email.tostring() + ")");
+info response;
+}
