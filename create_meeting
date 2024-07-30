@@ -1,0 +1,55 @@
+void Create_Meeting(string sd_pretty, string ed_pretty, string title, string desc, string anwsers)
+{
+meeting_map = Map();
+// Add 17 hours to the times
+start_time_part1 = sd_pretty.getPrefix("-").trim();
+start_time_part2 = sd_pretty.getSuffix(',').trim();
+end_time_part1 = ed_pretty.getPrefix("-").trim();
+end_time_part2 = ed_pretty.getSuffix(',').trim();
+// YMD and time to a format the Zoho accepts
+start_ymd = start_time_part2.toDate("MMM dd, yyyy").subString(0,10).toString("yyyy-MM-dd");
+end_ymd = end_time_part2.toDate("MMM dd, yyyy").subString(0,10).toString("yyyy-MM-dd");
+//addHour(ymd + ' ' + start_time_part1.subString(0,5) + ':00 ' + start_time_part1.subString(5,7),17).toString("MM/dd/yyyy HH:mm:ss")
+start_brisbane_time = addHour(start_ymd + ' ' + start_time_part1.subString(0,5) + ':00 ' + start_time_part1.subString(5,7),17).toString("MM/dd/yyyy HH:mm:ss");
+end_brisbane_time = addHour(end_ymd + ' ' + end_time_part1.subString(0,5) + ':00 ' + start_time_part1.subString(5,7),17).toString("MM/dd/yyyy HH:mm:ss");
+final_start_time = start_brisbane_time.subString(0,10).toString("yyyy-MM-dd") + 'T' + start_brisbane_time.subString(11,19) + '+10:00';
+final_end_time = end_brisbane_time.subString(0,10).toString("yyyy-MM-dd") + 'T' + end_brisbane_time.subString(11,19) + '+10:00';
+// use the portal id to find the care plan id 
+portal_id = '';
+for each  anwser in anwsers
+{
+	//info question;
+	info '----------';
+	if(anwser.get('question') == 'Trilogy ID')
+	{
+		portal_id = anwser.get('answer');
+	}
+}
+care_plan_id = '';
+response = zoho.crm.searchRecords("Care_Plans","(Portal_ID:equals:" + portal_id.tostring() + ")");
+info response;
+// if the response is not empty
+if(response.isEmpty())
+{
+	info 'cant find a matched record';
+}
+else
+{
+	// it should only return 1 result, if dev teams workflow for portal id is properly set up
+	info response.get(0).get("id");
+	care_plan_id = response.get(0).get("id");
+	// create activity based on the cp id 
+}
+// put them to a map 
+meeting_map.put('Owner',4637899000279240024);
+// this is kennys id testing only for now, will take owner list based on care plan ?? owner
+meeting_map.put('End_DateTime',final_end_time);
+meeting_map.put('Start_DateTime',final_start_time);
+meeting_map.put('Event_Title',title);
+meeting_map.put('Description',desc);
+meeting_map.put('What_Id',care_plan_id);
+meeting_map.put('$se_module','Care_Plans');
+info meeting_map;
+create_meeting = zoho.crm.createRecord('Events',meeting_map);
+info create_meeting;
+}
