@@ -1,0 +1,14 @@
+void convert_date_time_from_calendly(string start_date_test)
+{
+// Add 17 hours to the times
+start_time_part1 = start_date_test.getPrefix("-").trim();
+start_time_part2 = start_date_test.getSuffix(',').trim();
+info start_time_part1.subString(0,5);
+info start_time_part2.toDate("MMM dd, yyyy").subString(0,10);
+info start_time_part2.toDate("MMM dd, yyyy").subString(0,10).toString("yyyy-MM-dd");
+ymd = start_time_part2.toDate("MMM dd, yyyy").subString(0,10).toString("yyyy-MM-dd");
+info addHour(ymd + ' ' + start_time_part1.subString(0,5) + ':00',17);
+brisbane = addHour(ymd + ' ' + start_time_part1.subString(0,5) + ':00 ' + start_time_part1.subString(5,7),17).toString("MM/dd/yyyy HH:mm:ss");
+info brisbane;
+info brisbane.subString(0,10).toString("yyyy-MM-dd") + 'T' + brisbane.subString(11,19) + '+10:00';
+}
